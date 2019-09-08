@@ -9,23 +9,37 @@
 library(LearnBayes)
 
 pmean = 9; pvar= 25
+
 probH = pnorm(10,pmean,sqrt(pvar))
+
 probA = 1 - probH
+
 prior.odds = probH/probA
 prior.odds
+
 ybar = mean(points)
+
 sigma2 = 5^2/length(points);sigma2
+
 post.precision = (1/sigma2)+(1/pvar)
+
 post.var=1/post.precision
+
 # posterior density 
+
 post.mean = (ybar/sigma2+pmean/pvar)/post.precision
+
 c(post.mean,sqrt(post.var))
+
 # odds of the null hypothesis 
+
 post.odds = pnorm(10,post.mean,sqrt(post.var)) / (1-pnorm(10,post.mean,sqrt(post.var)))
 post.odds
+
 # Bayes Factor 
 BF01 = post.odds/prior.odds ;BF01 # not worth mentioning in support of Ho
 BF10 = prior.odds/post.odds ;BF10 # strong evidence against the Ho
+
 # posterior probabilities of the null hypothesis 
 postH = probH*BF01/(probH*BF01+probA)
 postH
