@@ -1,0 +1,78 @@
+library(rstan)
+library(bridgesampling)
+library(BayesFactor)
+
+
+
+
+stancodeH0 <- 'data {
+  int<lower=0> N;
+  vector[N] y;
+}
+parameters {
+  real mu;
+  real<lower=0> sigma;
+} model {
+    y     ~  normal(mu, sigma);
+    mu    ~  normal(9,1);
+    sigma ~  cauchy(0,1);
+}'
+points = c(8,13,20,11,8,9,20,5,18,9,9,7,11,13,11,14,11,12,11,4,4,17,15,22,11,8,22)
+
+data_list = list(y = points,  
+                 N = length(points))
+stanmodelH0 = stan_model(model_code = stancodeH0, model_name="stanmodel")
+stanfitH0   = sampling(stanmodelH0,
+                       data   = data_list,
+                       iter   = 20000, 
+                       warmup = 1000,
+                       chains = 4,
+                       cores  = 1,
+                       seed   = 12345,
+                       control = list(adapt_delta = .99))
+print(stanfitH0)
+plot(stanfitH0)
+
+stancodeH1 <- '
+data {
+  int<lower=0> N;
+  vector[N] y;
+}
+parameters {
+  real mu;
+  real<lower=0> sigma;
+}model{
+    y     ~  normal(mu, sigma);
+    mu    ~  normal(11,1);
+    sigma ~  cauchy(0,1);
+}
+'
+# compile models
+
+stanmodelH1 = stan_model(model_code = stancodeH1, model_name="stanmodel")
+stanfitH1   = sampling(stanmodelH1,
+                       data    = data_list,
+                       iter    = 20000,
+                       warmup  = 1000,
+                       chains  = 4, 
+                       cores   = 1,
+                       seed    = 12345,
+                       control = list(adapt_delta = .99))
+
+print(stanfitH1)
+plot(stanfitH1)
+H0 = bridge_sampler(stanfitH0, silent = TRUE)
+H1 = bridge_sampler(stanfitH1, silent = TRUE)
+print(H0)
+print(H1)
+# compute percentage errors
+H0.error <- error_measures(H0)$percentage
+H1.error <- error_measures(H1)$percentage
+print(H0.error)
+print(H1.error)
+# compute Bayes factor
+BF01=bayes_factor(H0,H1,log=TRUE)
+print(BF01)
+
+BF10=bayes_factor(H1,H0,log=TRUE)
+print(BF10)
