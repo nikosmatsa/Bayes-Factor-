@@ -6,7 +6,7 @@
 # history from 2008-9 season until 2017-2018 season
 
 
-
+library(LearnBayes)
 
 pmean = 9; pvar= 25
 probH = pnorm(10,pmean,sqrt(pvar))
