@@ -1,0 +1,14 @@
+
+# sloukas points 2018-19 comparison of hypotheses 
+# 27 games of Euroleague Regular Season 2018-19
+
+
+
+
+points = c(8,13,20,11,8,9,20,5,18,9,9,7,11,13,11,14,11,12,11,4,4,17,15,22,11,8,22)
+
+
+length(points)
+mean(points)
+var(points)
+sd(points)
